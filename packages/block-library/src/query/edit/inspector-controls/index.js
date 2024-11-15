@@ -30,17 +30,27 @@ import StickyControl from './sticky-control';
 import PerPageControl from './per-page-control';
 import OffsetControl from './offset-controls';
 import PagesControl from './pages-control';
+import PatternSelection from '../pattern-selection';
+import { unlock } from '../../../lock-unlock';
 import {
 	usePostTypes,
 	useIsPostTypeHierarchical,
 	useAllowedControls,
 	isControlAllowed,
 	useTaxonomies,
+	usePatterns,
 } from '../../utils';
 import { useToolsPanelDropdownMenuProps } from '../../../utils/hooks';
 
 export default function QueryInspectorControls( props ) {
-	const { attributes, setQuery, setDisplayLayout, isSingular } = props;
+	const {
+		attributes,
+		setQuery,
+		setDisplayLayout,
+		isSingular,
+		clientId,
+		name,
+	} = props;
 	const { query, displayLayout } = attributes;
 	const {
 		order,
@@ -173,19 +183,29 @@ export default function QueryInspectorControls( props ) {
 		showParentControl ||
 		showFormatControl;
 	const dropdownMenuProps = useToolsPanelDropdownMenuProps();
-
+	const hasPatterns = !! usePatterns( clientId, name ).length;
 	const showPostCountControl = isControlAllowed(
 		allowedControls,
 		'postCount'
 	);
 	const showOffSetControl = isControlAllowed( allowedControls, 'offset' );
 	const showPagesControl = isControlAllowed( allowedControls, 'pages' );
-
 	const showDisplayPanel =
 		showPostCountControl || showOffSetControl || showPagesControl;
 
 	return (
 		<>
+			{ hasPatterns && (
+				<PanelBody
+					title={ __( 'Design' ) }
+					className="block-library-query-toolspanel__design"
+				>
+					<PatternSelection
+						attributes={ attributes }
+						clientId={ clientId }
+					/>
+				</PanelBody>
+			) }
 			{ showSettingsPanel && (
 				<PanelBody title={ __( 'Settings' ) }>
 					{ showInheritControl && (
