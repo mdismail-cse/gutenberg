@@ -191,12 +191,14 @@ export default function QueryInspectorControls( props ) {
 			{ hasPatterns && (
 				<PanelBody
 					title={ __( 'Design' ) }
+					initialOpen={ false }
 					className="block-library-query-toolspanel__design"
 				>
 					<PatternSelection
 						attributes={ attributes }
 						clientId={ clientId }
 						showTitlesAsTooltip
+						showSearch={ false }
 					/>
 				</PanelBody>
 			) }
