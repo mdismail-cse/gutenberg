@@ -26,6 +26,7 @@ export default function QueryToolbar( { clientId, attributes } ) {
 				<Dropdown
 					contentClassName="block-editor-block-settings-menu__popover"
 					focusOnMount="firstElement"
+					expandOnMobile
 					renderToggle={ ( { isOpen, onToggle } ) => (
 						<ToolbarButton
 							aria-haspopup="true"
@@ -40,6 +41,7 @@ export default function QueryToolbar( { clientId, attributes } ) {
 							clientId={ clientId }
 							attributes={ attributes }
 							showSearch={ false }
+							showTitlesAsTooltip
 						/>
 					) }
 				/>

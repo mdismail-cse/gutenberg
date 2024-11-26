@@ -30,7 +30,6 @@ import StickyControl from './sticky-control';
 import PerPageControl from './per-page-control';
 import OffsetControl from './offset-controls';
 import PagesControl from './pages-control';
-import { unlock } from '../../../lock-unlock';
 import {
 	usePostTypes,
 	useIsPostTypeHierarchical,
@@ -174,22 +173,19 @@ export default function QueryInspectorControls( props ) {
 		showParentControl ||
 		showFormatControl;
 	const dropdownMenuProps = useToolsPanelDropdownMenuProps();
+
 	const showPostCountControl = isControlAllowed(
 		allowedControls,
 		'postCount'
 	);
 	const showOffSetControl = isControlAllowed( allowedControls, 'offset' );
 	const showPagesControl = isControlAllowed( allowedControls, 'pages' );
+
 	const showDisplayPanel =
 		showPostCountControl || showOffSetControl || showPagesControl;
 
 	return (
 		<>
-			{ !! postType && (
-				<BlockInfo>
-					<CreateNewPostLink postType={ postType } />
-				</BlockInfo>
-			) }
 			{ showSettingsPanel && (
 				<PanelBody title={ __( 'Settings' ) }>
 					{ showInheritControl && (
