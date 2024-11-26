@@ -4,6 +4,7 @@
 import { Draggable } from '@wordpress/components';
 import { createBlock, store as blocksStore } from '@wordpress/blocks';
 import { useDispatch, useSelect } from '@wordpress/data';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,6 +35,13 @@ const InserterDraggableBlocks = ( {
 		useDispatch( blockEditorStore )
 	);
 
+	const patternBlock = useMemo( () => {
+		return pattern?.type === INSERTER_PATTERN_TYPES.user &&
+			pattern?.syncStatus !== 'unsynced'
+			? [ createBlock( 'core/block', { ref: pattern.id } ) ]
+			: undefined;
+	}, [ pattern ] );
+
 	if ( ! isEnabled ) {
 		return children( {
 			draggable: false,
@@ -42,19 +50,14 @@ const InserterDraggableBlocks = ( {
 		} );
 	}
 
-	const parsedBlocks =
-		pattern?.type === INSERTER_PATTERN_TYPES.user &&
-		pattern?.syncStatus !== 'unsynced'
-			? [ createBlock( 'core/block', { ref: pattern.id } ) ]
-			: blocks;
-
+	const draggableBlocks = patternBlock ?? blocks;
 	return (
 		<Draggable
 			__experimentalTransferDataType="wp-blocks"
-			transferData={ { type: 'inserter', blocks: parsedBlocks } }
+			transferData={ { type: 'inserter', blocks: draggableBlocks } }
 			onDragStart={ ( event ) => {
 				startDragging();
-				for ( const block of parsedBlocks ) {
+				for ( const block of draggableBlocks ) {
 					const type = `wp-block:${ block.name }`;
 					event.dataTransfer.items.add( '', type );
 				}
