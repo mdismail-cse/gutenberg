@@ -138,9 +138,13 @@
 		white-space: nowrap;
 		color: $components-color-accent;
 		background: transparent;
+		font-weight: $font-weight-medium;
+		-webkit-font-smoothing: antialiased;
 
 		&:hover:not(:disabled, [aria-disabled="true"]) {
-			box-shadow: inset 0 0 0 $border-width $components-color-accent-darker-10;
+			box-shadow: inset 0 0 0 $border-width $components-color-accent-darker-20;
+			color: $components-color-accent-darker-20;
+			background: rgba(var(--wp-admin-theme-color--rgb), 0.04);
 		}
 
 		&:disabled:not(:focus),
@@ -220,7 +224,8 @@
 			}
 		}
 
-		&.is-tertiary {
+		&.is-tertiary,
+		&.is-secondary {
 			&:hover:not(:disabled, [aria-disabled="true"]) {
 				background: rgba($alert-red, 0.04);
 			}
