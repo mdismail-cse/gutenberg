@@ -229,30 +229,15 @@ export function MediaPlaceholder( {
 		} );
 	};
 
-	async function handleBlocksDrop( blocks ) {
-		if ( ! blocks || ! Array.isArray( blocks ) ) {
-			return;
-		}
+	async function handleBlocksDrop( event ) {
+		const { blocks } = parseDropEvent( event );
 
-		function recursivelyFindMediaFromBlocks( _blocks ) {
-			return _blocks.flatMap( ( block ) =>
-				( block.name === 'core/image' ||
-					block.name === 'core/audio' ||
-					block.name === 'core/video' ) &&
-				( block.attributes.url || block.attributes.src )
-					? [ block ]
-					: recursivelyFindMediaFromBlocks( block.innerBlocks )
-			);
-		}
-
-		const mediaBlocks = recursivelyFindMediaFromBlocks( blocks );
-
-		if ( ! mediaBlocks.length ) {
+		if ( ! blocks || ! blocks.length ) {
 			return;
 		}
 
 		const uploadedMediaList = await Promise.all(
-			mediaBlocks.map( ( block ) => {
+			blocks.map( ( block ) => {
 				const blockType = block.name.split( '/' )[ 1 ];
 				if ( block.attributes.id ) {
 					block.attributes.type = blockType;
@@ -289,13 +274,6 @@ export function MediaPlaceholder( {
 			onSelect( uploadedMediaList );
 		} else {
 			onSelect( uploadedMediaList[ 0 ] );
-		}
-	}
-
-	function onDrop( event ) {
-		const { blocks } = parseDropEvent( event );
-		if ( blocks ) {
-			handleBlocksDrop( blocks );
 		}
 	}
 
@@ -388,7 +366,7 @@ export function MediaPlaceholder( {
 		return (
 			<DropZone
 				onFilesDrop={ onFilesUpload }
-				onDrop={ onDrop }
+				onDrop={ handleBlocksDrop }
 				isEligible={ ( dataTransfer ) => {
 					const prefix = 'wp-block:core/';
 					const types = [];
