@@ -390,25 +390,18 @@ export function MediaPlaceholder( {
 				onFilesDrop={ onFilesUpload }
 				onDrop={ onDrop }
 				isEligible={ ( dataTransfer ) => {
-					const types = dataTransfer.types.filter( ( type ) =>
-						type.startsWith( 'wp-block:' )
-					);
-					const typeMap = {
-						image: 'wp-block:core/image',
-						audio: 'wp-block:core/audio',
-						video: 'wp-block:core/video',
-					};
-					const allowed = allowedTypes
-						.map( ( type ) => typeMap[ type ] )
-						.filter( Boolean );
-
-					if ( ! multiple ) {
-						return (
-							types.length === 1 && allowed.includes( types[ 0 ] )
-						);
+					const prefix = 'wp-block:core/';
+					const types = [];
+					for ( const type of dataTransfer.types ) {
+						if ( type.startsWith( prefix ) ) {
+							types.push( type.slice( prefix.length ) );
+						}
 					}
-
-					return types.every( ( type ) => allowed.includes( type ) );
+					return (
+						types.every( ( type ) =>
+							allowedTypes.includes( type )
+						) && ( multiple ? true : types.length === 1 )
+					);
 				} }
 			/>
 		);

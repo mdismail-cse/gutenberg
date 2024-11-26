@@ -103,6 +103,7 @@ export function DropZoneComponent( {
 		onDragEnd() {
 			setIsDraggingOverElement( false );
 			setIsDraggingOverDocument( false );
+			setIsActive( undefined );
 		},
 		onDragEnter() {
 			setIsDraggingOverElement( true );
