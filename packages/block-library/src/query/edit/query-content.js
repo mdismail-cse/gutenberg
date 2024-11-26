@@ -5,6 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { useInstanceId } from '@wordpress/compose';
 import { useEffect, useCallback } from '@wordpress/element';
 import {
+	BlockControls,
 	InspectorControls,
 	useBlockProps,
 	store as blockEditorStore,
@@ -21,6 +22,7 @@ import EnhancedPaginationControl from './inspector-controls/enhanced-pagination-
 import QueryInspectorControls from './inspector-controls';
 import EnhancedPaginationModal from './enhanced-pagination-modal';
 import { getQueryContextFromTemplate } from '../utils';
+import QueryToolbar from './query-toolbar';
 
 const DEFAULTS_POSTS_PER_PAGE = 3;
 
@@ -160,6 +162,9 @@ export default function QueryContent( {
 					isSingular={ isSingular }
 				/>
 			</InspectorControls>
+			<BlockControls>
+				<QueryToolbar attributes={ attributes } clientId={ clientId } />
+			</BlockControls>
 			<InspectorControls group="advanced">
 				<SelectControl
 					__nextHasNoMarginBottom

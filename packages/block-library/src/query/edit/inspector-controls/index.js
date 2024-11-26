@@ -30,7 +30,6 @@ import StickyControl from './sticky-control';
 import PerPageControl from './per-page-control';
 import OffsetControl from './offset-controls';
 import PagesControl from './pages-control';
-import PatternSelection, { useBlockPatterns } from '../pattern-selection';
 import { unlock } from '../../../lock-unlock';
 import {
 	usePostTypes,
@@ -42,8 +41,7 @@ import {
 import { useToolsPanelDropdownMenuProps } from '../../../utils/hooks';
 
 export default function QueryInspectorControls( props ) {
-	const { attributes, setQuery, setDisplayLayout, isSingular, clientId } =
-		props;
+	const { attributes, setQuery, setDisplayLayout, isSingular } = props;
 	const { query, displayLayout } = attributes;
 	const {
 		order,
@@ -176,7 +174,6 @@ export default function QueryInspectorControls( props ) {
 		showParentControl ||
 		showFormatControl;
 	const dropdownMenuProps = useToolsPanelDropdownMenuProps();
-	const hasPatterns = !! useBlockPatterns( clientId, attributes ).length;
 	const showPostCountControl = isControlAllowed(
 		allowedControls,
 		'postCount'
@@ -188,20 +185,6 @@ export default function QueryInspectorControls( props ) {
 
 	return (
 		<>
-			{ hasPatterns && (
-				<PanelBody
-					title={ __( 'Design' ) }
-					initialOpen={ false }
-					className="block-library-query-toolspanel__design"
-				>
-					<PatternSelection
-						attributes={ attributes }
-						clientId={ clientId }
-						showTitlesAsTooltip
-						showSearch={ false }
-					/>
-				</PanelBody>
-			) }
 			{ !! postType && (
 				<BlockInfo>
 					<CreateNewPostLink postType={ postType } />
