@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { createSelector, createRegistrySelector } from '@wordpress/data';
-
+import { getBlockType } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
@@ -84,14 +84,22 @@ export const isBlockSubtreeDisabled = ( state, clientId ) => {
 function getEnabledClientIdsTreeUnmemoized( state, rootClientId ) {
 	const blockOrder = getBlockOrder( state, rootClientId );
 	const result = [];
-
 	for ( const clientId of blockOrder ) {
+		// @TODO create a custom selector for this to limit potential damage?
+		const blockName = getBlockName( state, clientId );
+		// @TODO how to handle template and pattern titles?
+		const blockType = getBlockType( blockName );
 		const innerBlocks = getEnabledClientIdsTreeUnmemoized(
 			state,
 			clientId
 		);
 		if ( getBlockEditingMode( state, clientId ) !== 'disabled' ) {
-			result.push( { clientId, innerBlocks } );
+			result.push( {
+				clientId,
+				blockTitle: blockType?.title,
+				blockName,
+				innerBlocks,
+			} );
 		} else {
 			result.push( ...innerBlocks );
 		}

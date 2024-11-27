@@ -14,6 +14,7 @@ import {
 import {
 	__experimentalTreeGrid as TreeGrid,
 	VisuallyHidden,
+	SearchControl,
 } from '@wordpress/components';
 import { AsyncModeProvider, useSelect } from '@wordpress/data';
 import deprecated from '@wordpress/deprecated';
@@ -26,7 +27,7 @@ import {
 	forwardRef,
 	useState,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -116,7 +117,27 @@ function ListViewComponent(
 	const instanceId = useInstanceId( ListViewComponent );
 	const { clientIdsTree, draggedClientIds, selectedClientIds } =
 		useListViewClientIds( { blocks, rootClientId } );
-	const blockIndexes = useListViewBlockIndexes( clientIdsTree );
+	const [ searchInput, setSearchInput ] = useState( '' );
+	const filteredClientIdsTree = useMemo( () => {
+		if ( ! searchInput ) {
+			return clientIdsTree;
+		}
+		const searchRegex = new RegExp( searchInput, 'i' );
+		const found = new Set();
+		const filter = ( block ) => {
+			if ( searchRegex.test( block.blockTitle ) ) {
+				found.add( block );
+			}
+			for ( const innerBlock of block.innerBlocks ) {
+				filter( innerBlock );
+			}
+		};
+		for ( const block of clientIdsTree ) {
+			filter( block );
+		}
+		return Array.from( found );
+	}, [ searchInput, clientIdsTree ] );
+	const blockIndexes = useListViewBlockIndexes( filteredClientIdsTree );
 
 	const { getBlock } = useSelect( blockEditorStore );
 	const { visibleBlockCount } = useSelect(
@@ -339,8 +360,27 @@ function ListViewComponent(
 		}
 	);
 
-	// If there are no blocks to show and we're not showing the appender, do not render the list view.
-	if ( ! clientIdsTree.length && ! showAppender ) {
+	// If there are no blocks to show, and we're not showing the appender, do not render the list view.
+	if ( ! filteredClientIdsTree.length && ! showAppender ) {
+		// @TODO Add a message to indicate that there are no blocks to show if search is open and active.
+		if ( searchInput ) {
+			return (
+				<>
+					<SearchControl
+						__nextHasNoMarginBottom
+						value={ searchInput }
+						onChange={ setSearchInput }
+					/>
+					<p style={ { margin: '10px' } }>
+						{ sprintf(
+							// translators: %s: error message describing the problem
+							__( 'No list item found with the name "%s"' ),
+							searchInput
+						) }
+					</p>
+				</>
+			);
+		}
 		return null;
 	}
 
@@ -359,6 +399,12 @@ function ListViewComponent(
 					{ description }
 				</VisuallyHidden>
 			) }
+			{ /* @TODO how should this be activated? Cmd+f? Expandable icon? */ }
+			<SearchControl
+				__nextHasNoMarginBottom
+				value={ searchInput }
+				onChange={ setSearchInput }
+			/>
 			<TreeGrid
 				id={ id }
 				className={ clsx( 'block-editor-list-view-tree', {
@@ -385,7 +431,7 @@ function ListViewComponent(
 			>
 				<ListViewContext.Provider value={ contextValue }>
 					<ListViewBranch
-						blocks={ clientIdsTree }
+						blocks={ filteredClientIdsTree }
 						parentId={ rootClientId }
 						selectBlock={ selectEditorBlock }
 						showBlockMovers={ showBlockMovers }
