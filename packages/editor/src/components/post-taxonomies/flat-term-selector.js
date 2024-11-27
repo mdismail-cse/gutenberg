@@ -57,6 +57,13 @@ const termNamesToIds = ( names, terms ) => {
 		.filter( ( id ) => id !== undefined );
 };
 
+const Wrapper = ( { children, __nextHasNoMarginBottom } ) =>
+	__nextHasNoMarginBottom ? (
+		<VStack spacing={ 4 }>{ children }</VStack>
+	) : (
+		<Fragment>{ children }</Fragment>
+	);
+
 /**
  * Renders a flat term selector component.
  *
@@ -64,7 +71,7 @@ const termNamesToIds = ( names, terms ) => {
  * @param {string}  props.slug                    The slug of the taxonomy.
  * @param {boolean} props.__nextHasNoMarginBottom Start opting into the new margin-free styles that will become the default in a future version, currently scheduled to be WordPress 7.0. (The prop can be safely removed once this happens.)
  *
- * @return {JSX.Element} The rendered flat term selector component.
+ * @return {React.ReactNode} The rendered flat term selector component.
  */
 export function FlatTermSelector( { slug, __nextHasNoMarginBottom } ) {
 	const [ values, setValues ] = useState( [] );
@@ -292,15 +299,8 @@ export function FlatTermSelector( { slug, __nextHasNoMarginBottom } ) {
 		singularName
 	);
 
-	const Wrapper = ( { children } ) =>
-		__nextHasNoMarginBottom ? (
-			<VStack spacing={ 4 }>{ children }</VStack>
-		) : (
-			<Fragment>{ children }</Fragment>
-		);
-
 	return (
-		<Wrapper>
+		<Wrapper __nextHasNoMarginBottom={ __nextHasNoMarginBottom }>
 			<FormTokenField
 				__next40pxDefaultSize
 				value={ values }

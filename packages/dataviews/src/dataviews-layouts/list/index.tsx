@@ -170,16 +170,18 @@ function ListItem< Item >( {
 			( action ) => action.isPrimary && !! action.icon
 		);
 		return {
-			primaryAction: _primaryActions?.[ 0 ],
+			primaryAction: _primaryActions[ 0 ],
 			eligibleActions: _eligibleActions,
 		};
 	}, [ actions, item ] );
 
+	const hasOnlyOnePrimaryAction = primaryAction && actions.length === 1;
+
 	const renderedMediaField = mediaField?.render ? (
-		<mediaField.render item={ item } />
-	) : (
-		<div className="dataviews-view-list__media-placeholder"></div>
-	);
+		<div className="dataviews-view-list__media-wrapper">
+			<mediaField.render item={ item } />
+		</div>
+	) : null;
 
 	const renderedPrimaryField = primaryField?.render ? (
 		<primaryField.render item={ item } />
@@ -194,33 +196,35 @@ function ListItem< Item >( {
 					item={ item }
 				/>
 			) }
-			<div role="gridcell">
-				<Menu
-					trigger={
-						<Composite.Item
-							id={ generateDropdownTriggerCompositeId(
-								idPrefix
-							) }
-							render={
-								<Button
-									size="small"
-									icon={ moreVertical }
-									label={ __( 'Actions' ) }
-									accessibleWhenDisabled
-									disabled={ ! actions.length }
-									onKeyDown={ onDropdownTriggerKeyDown }
-								/>
-							}
+			{ ! hasOnlyOnePrimaryAction && (
+				<div role="gridcell">
+					<Menu
+						trigger={
+							<Composite.Item
+								id={ generateDropdownTriggerCompositeId(
+									idPrefix
+								) }
+								render={
+									<Button
+										size="small"
+										icon={ moreVertical }
+										label={ __( 'Actions' ) }
+										accessibleWhenDisabled
+										disabled={ ! actions.length }
+										onKeyDown={ onDropdownTriggerKeyDown }
+									/>
+								}
+							/>
+						}
+						placement="bottom-end"
+					>
+						<ActionsMenuGroup
+							actions={ eligibleActions }
+							item={ item }
 						/>
-					}
-					placement="bottom-end"
-				>
-					<ActionsMenuGroup
-						actions={ eligibleActions }
-						item={ item }
-					/>
-				</Menu>
-			</div>
+					</Menu>
+				</div>
+			) }
 		</HStack>
 	);
 
@@ -248,9 +252,7 @@ function ListItem< Item >( {
 					/>
 				</div>
 				<HStack spacing={ 3 } justify="start" alignment="flex-start">
-					<div className="dataviews-view-list__media-wrapper">
-						{ renderedMediaField }
-					</div>
+					{ renderedMediaField }
 					<VStack
 						spacing={ 1 }
 						className="dataviews-view-list__field-wrapper"
